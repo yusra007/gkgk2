@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform groundChecker;
     [SerializeField] float groundCheckerRadius;
     [SerializeField] LayerMask obstacleLayer;
+    [SerializeField] float jumpHeight = 0.1f;
+    [SerializeField] float gravityDevide = 100f;
 
     private bool isGround;
     private void Awake()
@@ -30,6 +32,9 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Update()
     {
+        isGround = Physics.CheckSphere(groundChecker.position, groundCheckerRadius, obstacleLayer);
+
+
         Vector3 moveInputs = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
 
         Vector3 moveVelocity = moveInputs * Time.deltaTime * speed;
@@ -42,10 +47,10 @@ public class PlayerMovement : MonoBehaviour
         Camera.main.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
 
 
-        isGround = Physics.CheckSphere(groundChecker.position, groundCheckerRadius, obstacleLayer);
+        
         if (!isGround)
         {
-            velocity.y += gravity * Time.deltaTime;
+            velocity.y += gravity * Time.deltaTime/gravityDevide;
         }
         
 
@@ -55,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Space) && isGround)
         {
-            velocity.y = Mathf.Sqrt(0.05f* -2f* gravity);
+            velocity.y = Mathf.Sqrt(jumpHeight* -2f* gravity/gravityDevide);
         }
         controller.Move(velocity);
 
